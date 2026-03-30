@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Biblioteca</title>
+  <style>
+    body { font-family: Arial; background: #f5f5f5; padding: 20px; }
+    h1 { text-align: center; }
+    .container { max-width: 800px; margin: auto; }
+    input, button { padding: 8px; margin: 5px 0; }
+    .book { background: white; padding: 10px; margin-top: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .actions button { margin-left: 5px; }
+    .status { font-size: 12px; }
+    .available { color: green; }
+    .borrowed { color: red; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Biblioteca</h1>
+
+    <input type="text" id="title" placeholder="Título">
+    <input type="text" id="author" placeholder="Autor">
+    <button onclick="addBook()">Adicionar</button>
+
+    <input type="text" id="search" placeholder="Buscar..." oninput="renderBooks()">
+
+    <div id="list"></div>
+  </div>
+
+  <script>
+    let books = [
+      { id: 1, title: "Dom Casmurro", author: "Machado de Assis", borrowed: false },
+      { id: 2, title: "1984", author: "George Orwell", borrowed: true }
+    ];
+
+    function addBook() {
+      const title = document.getElementById('title').value;
+      const author = document.getElementById('author').value;
+
+      if (!title || !author) return;
+
+      books.push({ id: Date.now(), title, author, borrowed: false });
+
+      document.getElementById('title').value = '';
+      document.getElementById('author').value = '';
+
+      renderBooks();
+    }
+
+    function deleteBook(id) {
+      books = books.filter(book => book.id !== id);
+      renderBooks();
+    }
+
+    function toggleBorrow(id) {
+      books = books.map(book =>
+        book.id === id ? { ...book, borrowed: !book.borrowed } : book
+      );
+      renderBooks();
+    }
+
+    function renderBooks() {
+      const search = document.getElementById('search').value.toLowerCase();
+      const list = document.getElementById('list');
+
+      list.innerHTML = '';
+
+      books
+        .filter(book =>
+          book.title.toLowerCase().includes(search) ||
+          book.author.toLowerCase().includes(search)
+        )
+        .forEach(book => {
+          const div = document.createElement('div');
+          div.className = 'book';
+
+          div.innerHTML = `
+            <div>
+              <strong>${book.title}</strong><br>
+              <small>${book.author}</small><br>
+              <span class="status ${book.borrowed ? 'borrowed' : 'available'}">
+                ${book.borrowed ? 'Emprestado' : 'Disponível'}
+              </span>
+            </div>
+            <div class="actions">
+              <button onclick="toggleBorrow(${book.id})">
+                ${book.borrowed ? 'Devolver' : 'Emprestar'}
+              </button>
+              <button onclick="deleteBook(${book.id})">Excluir</button>
+            </div>
+          `;
+
+          list.appendChild(div);
+        });
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>
