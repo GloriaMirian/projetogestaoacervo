@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ulysses Acervo - Dashboard</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+</head>
+
+<body class="bg-light">
+
+    <!-- MENU SUPERIOR -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+
+            <span class="navbar-brand fw-bold">
+                📚 Ulysses Acervo
+            </span>
+
+            <button
+                class="btn btn-light btn-sm"
+                onclick="sair()"
+            >
+                Sair
+            </button>
+
+        </div>
+    </nav>
+
+
+    <!-- CONTEÚDO -->
+    <div class="container mt-4">
+
+        <div class="mb-4">
+
+            <h2 class="fw-bold">
+                Dashboard
+            </h2>
+
+            <p class="text-muted">
+                Gestão de Empréstimos de Livros
+            </p>
+
+        </div>
+
+
+        <!-- CARDS -->
+        <div class="row g-4">
+
+
+            <!-- LIVROS -->
+            <div class="col-md-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            📚
+                        </div>
+
+                        <h5 class="card-title mt-2">
+                            Livros
+                        </h5>
+
+                        <p class="text-muted">
+                            Gerencie os livros do acervo.
+                        </p>
+
+                        <button
+    class="btn btn-primary"
+    onclick="window.location.href='livros.html'"
+>
+    Acessar
+</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ALUNOS -->
+            <div class="col-md-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            👥
+                        </div>
+
+                        <h5 class="card-title mt-2">
+                            Alunos
+                        </h5>
+
+                        <p class="text-muted">
+                            Cadastre e consulte os alunos.
+                        </p>
+
+                        <button class="btn btn-primary">
+                            Acessar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- EMPRÉSTIMOS -->
+            <div class="col-md-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            🔄
+                        </div>
+
+                        <h5 class="card-title mt-2">
+                            Empréstimos
+                        </h5>
+
+                        <p class="text-muted">
+                            Controle os empréstimos realizados.
+                        </p>
+
+                        <button class="btn btn-primary">
+                            Acessar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DEVOLUÇÕES -->
+            <div class="col-md-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            📋
+                        </div>
+
+                        <h5 class="card-title mt-2">
+                            Devoluções
+                        </h5>
+
+                        <p class="text-muted">
+                            Registre e consulte devoluções.
+                        </p>
+
+                        <button class="btn btn-primary">
+                            Acessar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script>
+
+        function sair() {
+
+            window.location.href = "index.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
