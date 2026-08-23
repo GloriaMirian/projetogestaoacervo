@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ulysses Acervo - Empréstimos</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+</head>
+
+<body class="bg-light">
+
+    <!-- MENU -->
+    <nav class="navbar navbar-dark bg-primary">
+
+        <div class="container-fluid">
+
+            <span class="navbar-brand fw-bold">
+                📚 Ulysses Acervo
+            </span>
+
+            <div>
+
+                <button
+                    class="btn btn-light btn-sm me-2"
+                    onclick="voltar()"
+                >
+                    ← Voltar
+                </button>
+
+                <button
+                    class="btn btn-danger btn-sm"
+                    onclick="sair()"
+                >
+                    Sair
+                </button>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- CONTEÚDO -->
+    <div class="container mt-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2 class="fw-bold">
+                    🔄 Empréstimos
+                </h2>
+
+                <p class="text-muted">
+                    Controle de empréstimos e devoluções
+                </p>
+
+            </div>
+
+            <button
+                class="btn btn-primary"
+                onclick="abrirCadastro()"
+            >
+                + Novo Empréstimo
+            </button>
+
+        </div>
+
+
+        <!-- RESUMO -->
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <h6 class="text-muted">
+                            Empréstimos ativos
+                        </h6>
+
+                        <h2
+                            id="totalAtivos"
+                            class="fw-bold"
+                        >
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <h6 class="text-muted">
+                            Devolvidos
+                        </h6>
+
+                        <h2
+                            id="totalDevolvidos"
+                            class="fw-bold"
+                        >
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <h6 class="text-muted">
+                            Total de empréstimos
+                        </h6>
+
+                        <h2
+                            id="totalEmprestimos"
+                            class="fw-bold"
+                        >
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PESQUISA -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-body">
+
+                <label class="form-label fw-bold">
+                    Pesquisar empréstimo
+                </label>
+
+                <input
+                    type="text"
+                    id="pesquisa"
+                    class="form-control"
+                    placeholder="Digite o nome do aluno ou livro..."
+                    onkeyup="listarEmprestimos()"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- LISTA -->
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <h5 class="fw-bold mb-3">
+                    Histórico de empréstimos
+                </h5>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th>Aluno</th>
+
+                                <th>Livro</th>
+
+                                <th>Empréstimo</th>
+
+                                <th>Devolução prevista</th>
+
+                                <th>Status</th>
+
+                                <th>Ação</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="listaEmprestimos"></tbody>
+
+                    </table>
+
+                </div>
+
+                <div
+                    id="semEmprestimos"
+                    class="text-center text-muted py-4"
+                >
+                    Nenhum empréstimo registrado.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MODAL -->
+
+    <div
+        class="modal fade"
+        id="modalEmprestimo"
+        tabindex="-1"
+    >
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Novo Empréstimo
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+
+                    <!-- ALUNO -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+                            Aluno
+                        </label>
+
+                        <select
+                            id="aluno"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                Selecione o aluno
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- LIVRO -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+                            Livro
+                        </label>
+
+                        <select
+                            id="livro"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                Selecione o livro
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DATA EMPRÉSTIMO -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+                            Data do empréstimo
+                        </label>
+
+                        <input
+                            type="date"
+                            id="dataEmprestimo"
+                            class="form-control"
+                        >
+
+                    </div>
+
+
+                    <!-- DATA DEVOLUÇÃO -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+                            Data prevista para devolução
+                        </label>
+
+                        <input
+                            type="date"
+                            id="dataDevolucao"
+                            class="form-control"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        onclick="salvarEmprestimo()"
+                    >
+                        Registrar Empréstimo
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOOTSTRAP -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        // CARREGAR DADOS
+
+        let livros =
+            JSON.parse(localStorage.getItem("livros")) || [];
+
+        let alunos =
+            JSON.parse(localStorage.getItem("alunos")) || [];
+
+        let emprestimos =
+            JSON.parse(localStorage.getItem("emprestimos")) || [];
+
+
+        const modal =
+            new bootstrap.Modal(
+                document.getElementById("modalEmprestimo")
+            );
+
+
+        // ABRIR CADASTRO
+
+        function abrirCadastro() {
+
+            carregarAlunos();
+
+            carregarLivros();
+
+            document.getElementById("aluno").value = "";
+
+            document.getElementById("livro").value = "";
+
+            definirDatas();
+
+            modal.show();
+
+        }
+
+
+        // CARREGAR ALUNOS
+
+        function carregarAlunos() {
+
+            const select =
+                document.getElementById("aluno");
+
+            select.innerHTML = `
+                <option value="">
+                    Selecione o aluno
+                </option>
+            `;
+
+
+            alunos.forEach(function(aluno, indice) {
+
+                select.innerHTML += `
+
+                    <option value="${indice}">
+                        ${aluno.nome} - ${aluno.matricula}
+                    </option>
+
+                `;
+
+            });
+
+        }
+
+
+        // CARREGAR LIVROS
+
+        function carregarLivros() {
+
+            const select =
+                document.getElementById("livro");
+
+            select.innerHTML = `
+                <option value="">
+                    Selecione o livro
+                </option>
+            `;
+
+
+            livros.forEach(function(livro, indice) {
+
+                const quantidade =
+                    Number(livro.quantidade);
+
+
+                if (quantidade > 0) {
+
+                    select.innerHTML += `
+
+                        <option value="${indice}">
+                            ${livro.titulo} - ${livro.autor}
+                            (${quantidade} disponível)
+                        </option>
+
+                    `;
+
+                }
+
+            });
+
+        }
+
+
+        // DEFINIR DATAS
+
+        function definirDatas() {
+
+            const hoje =
+                new Date();
+
+
+            const dataHoje =
+                hoje.toISOString().split("T")[0];
+
+
+            document.getElementById("dataEmprestimo").value =
+                dataHoje;
+
+
+            const devolucao =
+                new Date(hoje);
+
+
+            devolucao.setDate(
+                devolucao.getDate() + 7
+            );
+
+
+            const dataDevolucao =
+                devolucao.toISOString().split("T")[0];
+
+
+            document.getElementById("dataDevolucao").value =
+                dataDevolucao;
+
+        }
+
+
+        // SALVAR EMPRÉSTIMO
+
+        function salvarEmprestimo() {
+
+            const alunoIndex =
+                document.getElementById("aluno").value;
+
+            const livroIndex =
+                document.getElementById("livro").value;
+
+            const dataEmprestimo =
+                document.getElementById("dataEmprestimo").value;
+
+            const dataDevolucao =
+                document.getElementById("dataDevolucao").value;
+
+
+            if (
+                alunoIndex === "" ||
+                livroIndex === "" ||
+                !dataEmprestimo ||
+                !dataDevolucao
+            ) {
+
+                alert(
+                    "Preencha todos os campos."
+                );
+
+                return;
+
+            }
+
+
+            if (dataDevolucao < dataEmprestimo) {
+
+                alert(
+                    "A data de devolução não pode ser anterior à data do empréstimo."
+                );
+
+                return;
+
+            }
+
+
+            const livro =
+                livros[livroIndex];
+
+
+            if (Number(livro.quantidade) <= 0) {
+
+                alert(
+                    "Este livro não está disponível."
+                );
+
+                return;
+
+            }
+
+
+            const aluno =
+                alunos[alunoIndex];
+
+
+            const emprestimo = {
+
+                aluno: aluno.nome,
+
+                matricula: aluno.matricula,
+
+                livro: livro.titulo,
+
+                autor: livro.autor,
+
+                dataEmprestimo: dataEmprestimo,
+
+                dataDevolucao: dataDevolucao,
+
+                status: "Emprestado"
+
+            };
+
+
+            emprestimos.push(emprestimo);
+
+
+            // DIMINUI A QUANTIDADE DO LIVRO
+
+            livro.quantidade =
+                Number(livro.quantidade) - 1;
+
+
+            // SALVAR LIVROS
+
+            localStorage.setItem(
+                "livros",
+                JSON.stringify(livros)
+            );
+
+
+            // SALVAR EMPRÉSTIMOS
+
+            localStorage.setItem(
+                "emprestimos",
+                JSON.stringify(emprestimos)
+            );
+
+
+            modal.hide();
+
+
+            listarEmprestimos();
+
+        }
+
+
+        // LISTAR EMPRÉSTIMOS
+
+        function listarEmprestimos() {
+
+            const tabela =
+                document.getElementById("listaEmprestimos");
+
+            const semEmprestimos =
+                document.getElementById("semEmprestimos");
+
+            const pesquisa =
+                document
+                    .getElementById("pesquisa")
+                    .value
+                    .toLowerCase();
+
+
+            tabela.innerHTML = "";
+
+
+            const filtrados =
+                emprestimos.filter(function(emprestimo) {
+
+                    return (
+
+                        emprestimo.aluno
+                            .toLowerCase()
+                            .includes(pesquisa)
+
+                        ||
+
+                        emprestimo.livro
+                            .toLowerCase()
+                            .includes(pesquisa)
+
+                    );
+
+                });
+
+
+            if (filtrados.length === 0) {
+
+                semEmprestimos.style.display =
+                    "block";
+
+            } else {
+
+                semEmprestimos.style.display =
+                    "none";
+
+            }
+
+
+            filtrados.forEach(function(
+                emprestimo
+            ) {
+
+                const indice =
+                    emprestimos.indexOf(
+                        emprestimo
+                    );
+
+
+                let statusHtml;
+
+
+                if (
+                    emprestimo.status ===
+                    "Devolvido"
+                ) {
+
+                    statusHtml = `
+                        <span class="badge bg-success">
+                            Devolvido
+                        </span>
+                    `;
+
+                } else {
+
+                    statusHtml = `
+                        <span class="badge bg-warning text-dark">
+                            Emprestado
+                        </span>
+                    `;
+
+                }
+
+
+                let botao = "";
+
+
+                if (
+                    emprestimo.status ===
+                    "Emprestado"
+                ) {
+
+                    botao = `
+
+                        <button
+                            class="btn btn-sm btn-success"
+                            onclick="registrarDevolucao(${indice})"
+                        >
+                            Devolver
+                        </button>
+
+                    `;
+
+                }
+
+
+                tabela.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            ${emprestimo.aluno}
+                        </td>
+
+                        <td>
+                            ${emprestimo.livro}
+                        </td>
+
+                        <td>
+                            ${formatarData(
+                                emprestimo.dataEmprestimo
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatarData(
+                                emprestimo.dataDevolucao
+                            )}
+                        </td>
+
+                        <td>
+                            ${statusHtml}
+                        </td>
+
+                        <td>
+                            ${botao}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            });
+
+
+            atualizarResumo();
+
+        }
+
+
+        // DEVOLUÇÃO
+
+        function registrarDevolucao(indice) {
+
+            const confirmar =
+                confirm(
+                    "Confirmar devolução deste livro?"
+                );
+
+
+            if (!confirmar) {
+
+                return;
+
+            }
+
+
+            const emprestimo =
+                emprestimos[indice];
+
+
+            // PROCURAR O LIVRO
+
+            const livro =
+                livros.find(function(livro) {
+
+                    return (
+                        livro.titulo ===
+                        emprestimo.livro
+                    );
+
+                });
+
+
+            if (livro) {
+
+                livro.quantidade =
+                    Number(livro.quantidade) + 1;
+
+            }
+
+
+            emprestimo.status =
+                "Devolvido";
+
+
+            localStorage.setItem(
+                "livros",
+                JSON.stringify(livros)
+            );
+
+
+            localStorage.setItem(
+                "emprestimos",
+                JSON.stringify(emprestimos)
+            );
+
+
+            listarEmprestimos();
+
+        }
+
+
+        // RESUMO
+
+        function atualizarResumo() {
+
+            const ativos =
+                emprestimos.filter(function(
+                    emprestimo
+                ) {
+
+                    return (
+                        emprestimo.status ===
+                        "Emprestado"
+                    );
+
+                }).length;
+
+
+            const devolvidos =
+                emprestimos.filter(function(
+                    emprestimo
+                ) {
+
+                    return (
+                        emprestimo.status ===
+                        "Devolvido"
+                    );
+
+                }).length;
+
+
+            document.getElementById(
+                "totalAtivos"
+            ).innerText = ativos;
+
+
+            document.getElementById(
+                "totalDevolvidos"
+            ).innerText = devolvidos;
+
+
+            document.getElementById(
+                "totalEmprestimos"
+            ).innerText =
+                emprestimos.length;
+
+        }
+
+
+        // FORMATAR DATA
+
+        function formatarData(data) {
+
+            if (!data) {
+
+                return "-";
+
+            }
+
+
+            const partes =
+                data.split("-");
+
+
+            return (
+                partes[2] +
+                "/" +
+                partes[1] +
+                "/" +
+                partes[0]
+            );
+
+        }
+
+
+        // VOLTAR
+
+        function voltar() {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+
+        // SAIR
+
+        function sair() {
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        // CARREGAR
+
+        listarEmprestimos();
+
+    </script>
+
+</body>
+
+</html>

@@ -50,7 +50,128 @@
         </div>
 
 
-        <!-- CARDS -->
+        <!-- INDICADORES -->
+        <div class="row g-4 mb-4">
+
+            <!-- TOTAL DE LIVROS -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            📚
+                        </div>
+
+                        <h6 class="text-muted">
+                            Total de livros
+                        </h6>
+
+                        <h2
+                            class="fw-bold"
+                            id="totalLivros"
+                        >
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL DE ALUNOS -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            👥
+                        </div>
+
+                        <h6 class="text-muted">
+                            Total de alunos
+                        </h6>
+
+                        <h2
+                            class="fw-bold"
+                            id="totalAlunos"
+                        >
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- EMPRÉSTIMOS ATIVOS -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            🔄
+                        </div>
+
+                        <h6 class="text-muted">
+                            Empréstimos ativos
+                        </h6>
+
+                        <h2
+                            class="fw-bold"
+                            id="totalAtivos"
+                        >
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DEVOLUÇÕES -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="fs-1">
+                            ✅
+                        </div>
+
+                        <h6 class="text-muted">
+                            Devoluções
+                        </h6>
+
+                        <h2
+                            class="fw-bold"
+                            id="totalDevolvidos"
+                        >
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CARDS DE ACESSO -->
         <div class="row g-4">
 
 
@@ -74,11 +195,11 @@
                         </p>
 
                         <button
-    class="btn btn-primary"
-    onclick="window.location.href='livros.html'"
->
-    Acessar
-</button>
+                            class="btn btn-primary"
+                            onclick="window.location.href='livros.html'"
+                        >
+                            Acessar
+                        </button>
 
                     </div>
 
@@ -106,7 +227,10 @@
                             Cadastre e consulte os alunos.
                         </p>
 
-                        <button class="btn btn-primary">
+                        <button
+                            class="btn btn-primary"
+                            onclick="window.location.href='alunos.html'"
+                        >
                             Acessar
                         </button>
 
@@ -136,7 +260,10 @@
                             Controle os empréstimos realizados.
                         </p>
 
-                        <button class="btn btn-primary">
+                        <button
+                            class="btn btn-primary"
+                            onclick="window.location.href='emprestimos.html'"
+                        >
                             Acessar
                         </button>
 
@@ -163,12 +290,15 @@
                         </h5>
 
                         <p class="text-muted">
-                            Registre e consulte devoluções.
+                            Consulte as devoluções realizadas.
                         </p>
 
-                        <button class="btn btn-primary">
-                            Acessar
-                        </button>
+                     <button
+    class="btn btn-primary"
+    onclick="window.location.href='devolucoes.html'"
+>
+    Acessar
+</button>
 
                     </div>
 
@@ -184,9 +314,82 @@
     <!-- JAVASCRIPT -->
     <script>
 
+        // CARREGAR DADOS
+
+        const livros =
+            JSON.parse(
+                localStorage.getItem("livros")
+            ) || [];
+
+
+        const alunos =
+            JSON.parse(
+                localStorage.getItem("alunos")
+            ) || [];
+
+
+        const emprestimos =
+            JSON.parse(
+                localStorage.getItem("emprestimos")
+            ) || [];
+
+
+        // TOTAL DE LIVROS
+
+        document.getElementById(
+            "totalLivros"
+        ).innerText = livros.length;
+
+
+        // TOTAL DE ALUNOS
+
+        document.getElementById(
+            "totalAlunos"
+        ).innerText = alunos.length;
+
+
+        // EMPRÉSTIMOS ATIVOS
+
+        const ativos =
+            emprestimos.filter(function(emprestimo) {
+
+                return (
+                    emprestimo.status ===
+                    "Emprestado"
+                );
+
+            }).length;
+
+
+        document.getElementById(
+            "totalAtivos"
+        ).innerText = ativos;
+
+
+        // DEVOLUÇÕES
+
+        const devolvidos =
+            emprestimos.filter(function(emprestimo) {
+
+                return (
+                    emprestimo.status ===
+                    "Devolvido"
+                );
+
+            }).length;
+
+
+        document.getElementById(
+            "totalDevolvidos"
+        ).innerText = devolvidos;
+
+
+        // SAIR
+
         function sair() {
 
-            window.location.href = "index.html";
+            window.location.href =
+                "index.html";
 
         }
 
