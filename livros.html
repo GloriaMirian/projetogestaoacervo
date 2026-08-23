@@ -23,12 +23,21 @@
                 📚 Ulysses Acervo
             </span>
 
-            <button
-                class="btn btn-light btn-sm"
-                onclick="window.location.href='dashboard.html'"
-            >
-                Voltar
-            </button>
+            <div>
+                <button
+                    class="btn btn-light btn-sm me-2"
+                    onclick="voltar()"
+                >
+                    ← Voltar
+                </button>
+
+                <button
+                    class="btn btn-danger btn-sm"
+                    onclick="sair()"
+                >
+                    Sair
+                </button>
+            </div>
 
         </div>
     </nav>
@@ -41,7 +50,7 @@
 
             <div>
                 <h2 class="fw-bold">
-                    Livros
+                    📚 Livros
                 </h2>
 
                 <p class="text-muted">
@@ -51,10 +60,9 @@
 
             <button
                 class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#modalLivro"
+                onclick="abrirCadastro()"
             >
-                + Novo Livro
+                + Cadastrar Livro
             </button>
 
         </div>
@@ -65,12 +73,16 @@
 
             <div class="card-body">
 
+                <label class="form-label fw-bold">
+                    Pesquisar livro
+                </label>
+
                 <input
                     type="text"
                     id="pesquisa"
                     class="form-control"
-                    placeholder="Pesquisar por título ou autor..."
-                    onkeyup="pesquisarLivros()"
+                    placeholder="Digite o título ou autor..."
+                    onkeyup="listarLivros()"
                 >
 
             </div>
@@ -78,35 +90,43 @@
         </div>
 
 
-        <!-- TABELA -->
+        <!-- LISTA DE LIVROS -->
         <div class="card shadow-sm border-0">
 
             <div class="card-body">
+
+                <h5 class="fw-bold mb-3">
+                    Livros cadastrados
+                </h5>
 
                 <div class="table-responsive">
 
                     <table class="table table-hover align-middle">
 
-                        <thead>
+                        <thead class="table-light">
 
                             <tr>
                                 <th>Título</th>
                                 <th>Autor</th>
-                                <th>ISBN</th>
+                                <th>Categoria</th>
+                                <th>Ano</th>
                                 <th>Quantidade</th>
                                 <th>Ações</th>
                             </tr>
 
                         </thead>
 
-                        <tbody id="listaLivros">
-
-                            <!-- Livros aparecerão aqui -->
-
-                        </tbody>
+                        <tbody id="listaLivros"></tbody>
 
                     </table>
 
+                </div>
+
+                <div
+                    id="semLivros"
+                    class="text-center text-muted py-4"
+                >
+                    Nenhum livro cadastrado.
                 </div>
 
             </div>
@@ -129,7 +149,10 @@
 
                 <div class="modal-header">
 
-                    <h5 class="modal-title">
+                    <h5
+                        class="modal-title"
+                        id="tituloModal"
+                    >
                         Cadastrar Livro
                     </h5>
 
@@ -144,56 +167,78 @@
 
                 <div class="modal-body">
 
-                    <form id="formLivro">
+                    <input
+                        type="hidden"
+                        id="indiceLivro"
+                    >
 
-                        <div class="mb-3">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Título
+                        </label>
+
+                        <input
+                            type="text"
+                            id="titulo"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Autor
+                        </label>
+
+                        <input
+                            type="text"
+                            id="autor"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Categoria
+                        </label>
+
+                        <input
+                            type="text"
+                            id="categoria"
+                            class="form-control"
+                            placeholder="Ex.: Literatura"
+                        >
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
 
                             <label class="form-label">
-                                Título
+                                Ano
                             </label>
 
                             <input
-                                type="text"
-                                id="titulo"
+                                type="number"
+                                id="ano"
                                 class="form-control"
-                                required
                             >
 
                         </div>
 
 
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Autor
-                            </label>
-
-                            <input
-                                type="text"
-                                id="autor"
-                                class="form-control"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                ISBN
-                            </label>
-
-                            <input
-                                type="text"
-                                id="isbn"
-                                class="form-control"
-                            >
-
-                        </div>
-
-
-                        <div class="mb-3">
+                        <div class="col-md-6 mb-3">
 
                             <label class="form-label">
                                 Quantidade
@@ -204,20 +249,33 @@
                                 id="quantidade"
                                 class="form-control"
                                 min="1"
-                                required
+                                value="1"
                             >
 
                         </div>
 
+                    </div>
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary w-100"
-                        >
-                            Cadastrar Livro
-                        </button>
+                </div>
 
-                    </form>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        onclick="salvarLivro()"
+                    >
+                        Salvar
+                    </button>
 
                 </div>
 
@@ -237,70 +295,147 @@
     <!-- JAVASCRIPT -->
     <script>
 
-        let livros = [];
+        let livros = JSON.parse(localStorage.getItem("livros")) || [];
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("modalLivro")
+        );
 
 
-        document
-            .getElementById("formLivro")
-            .addEventListener("submit", function(event) {
+        // ABRIR CADASTRO
+        function abrirCadastro() {
 
-                event.preventDefault();
+            document.getElementById("tituloModal").innerText =
+                "Cadastrar Livro";
 
-                const titulo =
-                    document.getElementById("titulo").value;
+            document.getElementById("indiceLivro").value = "";
 
-                const autor =
-                    document.getElementById("autor").value;
+            document.getElementById("titulo").value = "";
+            document.getElementById("autor").value = "";
+            document.getElementById("categoria").value = "";
+            document.getElementById("ano").value = "";
+            document.getElementById("quantidade").value = "1";
 
-                const isbn =
-                    document.getElementById("isbn").value;
+            modal.show();
 
-                const quantidade =
-                    document.getElementById("quantidade").value;
+        }
 
 
-                const livro = {
+        // SALVAR LIVRO
+        function salvarLivro() {
 
-                    titulo: titulo,
-                    autor: autor,
-                    isbn: isbn,
-                    quantidade: quantidade
+            const titulo =
+                document.getElementById("titulo").value.trim();
 
-                };
+            const autor =
+                document.getElementById("autor").value.trim();
 
+            const categoria =
+                document.getElementById("categoria").value.trim();
+
+            const ano =
+                document.getElementById("ano").value;
+
+            const quantidade =
+                document.getElementById("quantidade").value;
+
+
+            if (!titulo || !autor) {
+
+                alert("Preencha o título e o autor.");
+
+                return;
+
+            }
+
+
+            const indice =
+                document.getElementById("indiceLivro").value;
+
+
+            const livro = {
+
+                titulo: titulo,
+                autor: autor,
+                categoria: categoria,
+                ano: ano,
+                quantidade: quantidade
+
+            };
+
+
+            if (indice === "") {
 
                 livros.push(livro);
 
+            } else {
 
-                mostrarLivros();
+                livros[indice] = livro;
+
+            }
 
 
+            localStorage.setItem(
+                "livros",
+                JSON.stringify(livros)
+            );
+
+
+            modal.hide();
+
+            listarLivros();
+
+        }
+
+
+        // LISTAR LIVROS
+        function listarLivros() {
+
+            const tabela =
+                document.getElementById("listaLivros");
+
+            const semLivros =
+                document.getElementById("semLivros");
+
+            const pesquisa =
                 document
-                    .getElementById("formLivro")
-                    .reset();
+                    .getElementById("pesquisa")
+                    .value
+                    .toLowerCase();
 
 
-                const modal =
-                    bootstrap.Modal.getInstance(
-                        document.getElementById("modalLivro")
-                    );
+            tabela.innerHTML = "";
 
-                modal.hide();
+
+            const filtrados = livros.filter(function(livro) {
+
+                return (
+                    livro.titulo.toLowerCase().includes(pesquisa) ||
+                    livro.autor.toLowerCase().includes(pesquisa)
+                );
 
             });
 
 
-        function mostrarLivros() {
+            if (filtrados.length === 0) {
 
-            const lista =
-                document.getElementById("listaLivros");
+                semLivros.style.display = "block";
 
-            lista.innerHTML = "";
+                return;
+
+            }
 
 
-            livros.forEach(function(livro, index) {
+            semLivros.style.display = "none";
 
-                lista.innerHTML += `
+
+            filtrados.forEach(function(livro) {
+
+                const indice =
+                    livros.indexOf(livro);
+
+
+                tabela.innerHTML += `
 
                     <tr>
 
@@ -313,7 +448,11 @@
                         </td>
 
                         <td>
-                            ${livro.isbn || "-"}
+                            ${livro.categoria || "-"}
+                        </td>
+
+                        <td>
+                            ${livro.ano || "-"}
                         </td>
 
                         <td>
@@ -323,8 +462,15 @@
                         <td>
 
                             <button
-                                class="btn btn-danger btn-sm"
-                                onclick="excluirLivro(${index})"
+                                class="btn btn-sm btn-warning me-1"
+                                onclick="editarLivro(${indice})"
+                            >
+                                Editar
+                            </button>
+
+                            <button
+                                class="btn btn-sm btn-danger"
+                                onclick="excluirLivro(${indice})"
                             >
                                 Excluir
                             </button>
@@ -340,51 +486,87 @@
         }
 
 
-        function excluirLivro(index) {
+        // EDITAR LIVRO
+        function editarLivro(indice) {
 
-            if (confirm("Deseja excluir este livro?")) {
+            const livro = livros[indice];
 
-                livros.splice(index, 1);
 
-                mostrarLivros();
+            document.getElementById("tituloModal").innerText =
+                "Editar Livro";
+
+            document.getElementById("indiceLivro").value =
+                indice;
+
+            document.getElementById("titulo").value =
+                livro.titulo;
+
+            document.getElementById("autor").value =
+                livro.autor;
+
+            document.getElementById("categoria").value =
+                livro.categoria;
+
+            document.getElementById("ano").value =
+                livro.ano;
+
+            document.getElementById("quantidade").value =
+                livro.quantidade;
+
+
+            modal.show();
+
+        }
+
+
+        // EXCLUIR LIVRO
+        function excluirLivro(indice) {
+
+            const confirmar =
+                confirm(
+                    "Tem certeza que deseja excluir este livro?"
+                );
+
+
+            if (!confirmar) {
+
+                return;
 
             }
 
+
+            livros.splice(indice, 1);
+
+
+            localStorage.setItem(
+                "livros",
+                JSON.stringify(livros)
+            );
+
+
+            listarLivros();
+
+        }
+
+
+        // VOLTAR
+        function voltar() {
+
+            window.location.href = "home.html";
+
         }
 
 
-        function pesquisarLivros() {
+        // SAIR
+        function sair() {
 
-            const pesquisa =
-                document
-                    .getElementById("pesquisa")
-                    .value
-                    .toLowerCase();
-
-
-            const linhas =
-                document.querySelectorAll("#listaLivros tr");
-
-
-            linhas.forEach(function(linha) {
-
-                const texto =
-                    linha.innerText.toLowerCase();
-
-
-                if (texto.includes(pesquisa)) {
-
-                    linha.style.display = "";
-
-                } else {
-
-                    linha.style.display = "none";
-
-                }
-
-            });
+            window.location.href = "index.html";
 
         }
+
+
+        // CARREGAR LIVROS AO ABRIR A PÁGINA
+        listarLivros();
 
     </script>
 
