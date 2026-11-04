@@ -104,17 +104,18 @@
                     <table class="table table-hover align-middle">
 
                         <thead class="table-light">
+    <tr>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Categoria</th>
+        <th>Ano</th>
+        <th>Quantidade total</th>
+        <th>Emprestados</th>
+        <th>Disponíveis</th>
+        <th>Ações</th>
+    </tr>
+</thead>
 
-                            <tr>
-                                <th>Título</th>
-                                <th>Autor</th>
-                                <th>Categoria</th>
-                                <th>Ano</th>
-                                <th>Quantidade</th>
-                                <th>Ações</th>
-                            </tr>
-
-                        </thead>
 
                         <tbody id="listaLivros"></tbody>
 
@@ -378,15 +379,38 @@ async function salvarLivro() {
 }
 
 // LISTAR LIVROS
+
+// LISTAR LIVROS E CALCULAR DISPONIBILIDADE
 async function listarLivros() {
     const tabela = document.getElementById("listaLivros");
     const semLivros = document.getElementById("semLivros");
-    const pesquisa = document.getElementById("pesquisa").value.toLowerCase();
+    const pesquisa = document.getElementById("pesquisa").value
+        .trim()
+        .toLowerCase();
 
     try {
-        livros = await requisicaoAPI("/api/livros");
+        // Consultar livros e empréstimos
+        const [dadosLivros, emprestimos] = await Promise.all([
+            requisicaoAPI("/api/livros"),
+            requisicaoAPI("/api/emprestimos")
+        ]);
+
+        livros = dadosLivros;
         tabela.innerHTML = "";
 
+        // Contar empréstimos ativos por livro
+        const emprestimosPorLivro = {};
+
+        emprestimos
+            .filter(e => e.status === "Emprestado")
+            .forEach(e => {
+                const idLivro = String(e.livro_id);
+
+                emprestimosPorLivro[idLivro] =
+                    (emprestimosPorLivro[idLivro] || 0) + 1;
+            });
+
+        // Filtrar livros pela pesquisa
         const filtrados = livros.filter(livro =>
             livro.titulo.toLowerCase().includes(pesquisa) ||
             livro.autor.toLowerCase().includes(pesquisa)
@@ -402,39 +426,75 @@ async function listarLivros() {
         filtrados.forEach(livro => {
             const linha = document.createElement("tr");
 
-            [
+            const quantidadeTotal = Number(livro.quantidade || 0);
+
+            const emprestados =
+                emprestimosPorLivro[String(livro.id)] || 0;
+
+            const disponiveis = Math.max(
+                0,
+                quantidadeTotal - emprestados
+            );
+
+            const valores = [
                 livro.titulo,
                 livro.autor,
                 livro.categoria || "-",
                 livro.ano || "-",
-                livro.quantidade
-            ].forEach(valor => {
+                quantidadeTotal,
+                emprestados,
+                disponiveis
+            ];
+
+            valores.forEach((valor, indice) => {
                 const celula = document.createElement("td");
                 celula.textContent = valor;
+
+                if (indice === 6) {
+                    celula.classList.add(
+                        disponiveis > 0 ? "text-success" : "text-danger",
+                        "fw-bold"
+                    );
+                }
+
                 linha.appendChild(celula);
             });
 
+            // Ações
             const acoes = document.createElement("td");
 
             const botaoEditar = document.createElement("button");
             botaoEditar.className = "btn btn-sm btn-warning me-1";
             botaoEditar.textContent = "Editar";
-            botaoEditar.addEventListener("click", () => editarLivro(livro.id));
+            botaoEditar.addEventListener(
+                "click",
+                () => editarLivro(livro.id)
+            );
 
             const botaoExcluir = document.createElement("button");
             botaoExcluir.className = "btn btn-sm btn-danger";
             botaoExcluir.textContent = "Excluir";
-            botaoExcluir.addEventListener("click", () => excluirLivro(livro.id));
+            botaoExcluir.addEventListener(
+                "click",
+                () => excluirLivro(livro.id)
+            );
 
             acoes.append(botaoEditar, botaoExcluir);
             linha.appendChild(acoes);
+
             tabela.appendChild(linha);
         });
+
     } catch (erro) {
+        console.error(erro);
         semLivros.style.display = "block";
-        alert("Erro ao carregar os livros: " + erro.message);
+
+        alert(
+            "Erro ao carregar os livros: " + erro.message
+        );
     }
 }
+
 
 // EDITAR LIVRO
 function editarLivro(id) {
