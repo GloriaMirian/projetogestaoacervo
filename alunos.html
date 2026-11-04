@@ -259,265 +259,188 @@
     <!-- JAVASCRIPT -->
     <script>
 
-        let alunos =
-            JSON.parse(localStorage.getItem("alunos")) || [];
+let alunos = [];
 
+const modal = new bootstrap.Modal(
+    document.getElementById("modalAluno")
+);
 
-        const modal =
-            new bootstrap.Modal(
-                document.getElementById("modalAluno")
-            );
+// Evita inserir conteúdo digitado diretamente como HTML
+function escaparHTML(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[caractere]);
+}
 
+// ABRIR CADASTRO
+function abrirCadastro() {
+    document.getElementById("tituloModal").innerText = "Cadastrar Aluno";
+    document.getElementById("indiceAluno").value = "";
+    document.getElementById("nome").value = "";
+    document.getElementById("matricula").value = "";
+    document.getElementById("turma").value = "";
 
-        // ABRIR CADASTRO
-        function abrirCadastro() {
+    modal.show();
+}
 
-            document.getElementById("tituloModal").innerText =
-                "Cadastrar Aluno";
+// SALVAR
+async function salvarAluno() {
+    const nome = document.getElementById("nome").value.trim();
+    const matricula = document.getElementById("matricula").value.trim();
+    const turma = document.getElementById("turma").value.trim();
+    const id = document.getElementById("indiceAluno").value;
 
-            document.getElementById("indiceAluno").value = "";
+    if (!nome || !matricula || !turma) {
+        alert("Preencha o nome, matrícula e turma.");
+        return;
+    }
 
-            document.getElementById("nome").value = "";
-            document.getElementById("matricula").value = "";
-            document.getElementById("turma").value = "";
+    const aluno = { nome, matricula, turma };
 
-            modal.show();
-
-        }
-
-
-        // SALVAR
-        function salvarAluno() {
-
-            const nome =
-                document.getElementById("nome").value.trim();
-
-            const matricula =
-                document.getElementById("matricula").value.trim();
-
-            const turma =
-                document.getElementById("turma").value.trim();
-
-
-            if (!nome || !matricula || !turma) {
-
-                alert(
-                    "Preencha o nome, matrícula e turma."
-                );
-
-                return;
-
+    try {
+        const resposta = await fetch(
+            id ? `/api/alunos/${id}` : "/api/alunos",
+            {
+                method: id ? "PUT" : "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(aluno)
             }
+        );
 
+        const resultado = await resposta.json();
 
-            const indice =
-                document.getElementById("indiceAluno").value;
-
-
-            const aluno = {
-
-                nome: nome,
-                matricula: matricula,
-                turma: turma
-
-            };
-
-
-            if (indice === "") {
-
-                alunos.push(aluno);
-
-            } else {
-
-                alunos[indice] = aluno;
-
-            }
-
-
-            localStorage.setItem(
-                "alunos",
-                JSON.stringify(alunos)
-            );
-
-
-            modal.hide();
-
-            listarAlunos();
-
+        if (!resposta.ok) {
+            throw new Error(resultado.erro || "Não foi possível salvar o aluno.");
         }
 
+        modal.hide();
+        alert(id ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
+        await listarAlunos();
 
-        // LISTAR
-        function listarAlunos() {
+    } catch (erro) {
+        alert(erro.message || "Erro ao comunicar com o servidor.");
+    }
+}
 
-            const tabela =
-                document.getElementById("listaAlunos");
+// LISTAR E PESQUISAR
+async function listarAlunos() {
+    const tabela = document.getElementById("listaAlunos");
+    const semAlunos = document.getElementById("semAlunos");
+    const pesquisa = document.getElementById("pesquisa").value.toLowerCase();
 
-            const semAlunos =
-                document.getElementById("semAlunos");
+    try {
+        const resposta = await fetch("/api/alunos");
 
-            const pesquisa =
-                document
-                    .getElementById("pesquisa")
-                    .value
-                    .toLowerCase();
-
-
-            tabela.innerHTML = "";
-
-
-            const filtrados =
-                alunos.filter(function(aluno) {
-
-                    return (
-                        aluno.nome
-                            .toLowerCase()
-                            .includes(pesquisa)
-                        ||
-                        aluno.matricula
-                            .toLowerCase()
-                            .includes(pesquisa)
-                    );
-
-                });
-
-
-            if (filtrados.length === 0) {
-
-                semAlunos.style.display = "block";
-
-                return;
-
-            }
-
-
-            semAlunos.style.display = "none";
-
-
-            filtrados.forEach(function(aluno) {
-
-                const indice =
-                    alunos.indexOf(aluno);
-
-
-                tabela.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${aluno.nome}
-                        </td>
-
-                        <td>
-                            ${aluno.matricula}
-                        </td>
-
-                        <td>
-                            ${aluno.turma}
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="btn btn-sm btn-warning me-1"
-                                onclick="editarAluno(${indice})"
-                            >
-                                Editar
-                            </button>
-
-                            <button
-                                class="btn btn-sm btn-danger"
-                                onclick="excluirAluno(${indice})"
-                            >
-                                Excluir
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
+        if (!resposta.ok) {
+            throw new Error("Não foi possível carregar os alunos.");
         }
 
+        alunos = await resposta.json();
 
-        // EDITAR
-        function editarAluno(indice) {
+        const filtrados = alunos.filter(aluno =>
+            aluno.nome.toLowerCase().includes(pesquisa) ||
+            aluno.matricula.toLowerCase().includes(pesquisa)
+        );
 
-            const aluno = alunos[indice];
+        tabela.innerHTML = "";
 
-
-            document.getElementById("tituloModal").innerText =
-                "Editar Aluno";
-
-            document.getElementById("indiceAluno").value =
-                indice;
-
-            document.getElementById("nome").value =
-                aluno.nome;
-
-            document.getElementById("matricula").value =
-                aluno.matricula;
-
-            document.getElementById("turma").value =
-                aluno.turma;
-
-
-            modal.show();
-
+        if (filtrados.length === 0) {
+            semAlunos.style.display = "block";
+            return;
         }
 
+        semAlunos.style.display = "none";
 
-        // EXCLUIR
-        function excluirAluno(indice) {
+        filtrados.forEach(aluno => {
+            tabela.innerHTML += `
+                <tr>
+                    <td>${escaparHTML(aluno.nome)}</td>
+                    <td>${escaparHTML(aluno.matricula)}</td>
+                    <td>${escaparHTML(aluno.turma)}</td>
+                    <td>
+                        <button
+                            class="btn btn-sm btn-warning me-1"
+                            onclick="editarAluno(${aluno.id})">
+                            Editar
+                        </button>
 
-            const confirmar =
-                confirm(
-                    "Tem certeza que deseja excluir este aluno?"
-                );
+                        <button
+                            class="btn btn-sm btn-danger"
+                            onclick="excluirAluno(${aluno.id})">
+                            Excluir
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
 
+    } catch (erro) {
+        tabela.innerHTML = "";
+        semAlunos.style.display = "block";
+        semAlunos.innerText = erro.message;
+        console.error(erro);
+    }
+}
 
-            if (!confirmar) {
+// EDITAR
+function editarAluno(id) {
+    const aluno = alunos.find(item => item.id === id);
 
-                return;
+    if (!aluno) {
+        alert("Aluno não encontrado.");
+        return;
+    }
 
-            }
+    document.getElementById("tituloModal").innerText = "Editar Aluno";
+    document.getElementById("indiceAluno").value = aluno.id;
+    document.getElementById("nome").value = aluno.nome;
+    document.getElementById("matricula").value = aluno.matricula;
+    document.getElementById("turma").value = aluno.turma;
 
+    modal.show();
+}
 
-            alunos.splice(indice, 1);
+// EXCLUIR
+async function excluirAluno(id) {
+    const confirmar = confirm("Tem certeza que deseja excluir este aluno?");
 
+    if (!confirmar) return;
 
-            localStorage.setItem(
-                "alunos",
-                JSON.stringify(alunos)
-            );
+    try {
+        const resposta = await fetch(`/api/alunos/${id}`, {
+            method: "DELETE"
+        });
 
+        const resultado = await resposta.json();
 
-            listarAlunos();
-
+        if (!resposta.ok) {
+            throw new Error(resultado.erro || "Não foi possível excluir o aluno.");
         }
 
+        alert("Aluno excluído com sucesso!");
+        await listarAlunos();
 
-        // VOLTAR
-        function voltar() {
+    } catch (erro) {
+        alert(erro.message || "Erro ao comunicar com o servidor.");
+    }
+}
 
-            window.location.href = "dashboard.html";
+// VOLTAR
+function voltar() {
+    window.location.href = "dashboard.html";
+}
 
-        }
+// SAIR
+function sair() {
+    window.location.href = "index.html";
+}
 
-
-        // SAIR
-        function sair() {
-
-            window.location.href = "index.html";
-
-        }
-
-
-        // CARREGAR
-        listarAlunos();
+// CARREGAR
+listarAlunos();
 
     </script>
 

@@ -33,10 +33,10 @@
         </div>
     </nav>
 
-
     <!-- CONTEÚDO -->
     <div class="container mt-4">
 
+        <!-- TÍTULO -->
         <div class="mb-4">
 
             <h2 class="fw-bold">
@@ -49,142 +49,110 @@
 
         </div>
 
-
         <!-- INDICADORES -->
-        <div class="row g-4 mb-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-4 mb-4">
 
             <!-- TOTAL DE LIVROS -->
-            <div class="col-md-3">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            📚
-                        </div>
+                        <div class="fs-1">📚</div>
 
                         <h6 class="text-muted">
                             Total de livros
                         </h6>
 
-                        <h2
-                            class="fw-bold"
-                            id="totalLivros"
-                        >
-                            0
-                        </h2>
+                        <h2 class="fw-bold" id="totalLivros">0</h2>
 
                     </div>
-
                 </div>
-
             </div>
 
-
             <!-- TOTAL DE ALUNOS -->
-            <div class="col-md-3">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            👥
-                        </div>
+                        <div class="fs-1">👥</div>
 
                         <h6 class="text-muted">
                             Total de alunos
                         </h6>
 
-                        <h2
-                            class="fw-bold"
-                            id="totalAlunos"
-                        >
-                            0
-                        </h2>
+                        <h2 class="fw-bold" id="totalAlunos">0</h2>
 
                     </div>
-
                 </div>
-
             </div>
 
-
             <!-- EMPRÉSTIMOS ATIVOS -->
-            <div class="col-md-3">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            🔄
-                        </div>
+                        <div class="fs-1">🔄</div>
 
                         <h6 class="text-muted">
                             Empréstimos ativos
                         </h6>
 
-                        <h2
-                            class="fw-bold"
-                            id="totalAtivos"
-                        >
-                            0
-                        </h2>
+                        <h2 class="fw-bold" id="totalAtivos">0</h2>
 
                     </div>
-
                 </div>
-
             </div>
 
-
             <!-- DEVOLUÇÕES -->
-            <div class="col-md-3">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            ✅
-                        </div>
+                        <div class="fs-1">✅</div>
 
                         <h6 class="text-muted">
                             Devoluções
                         </h6>
 
+                        <h2 class="fw-bold" id="totalDevolvidos">0</h2>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMPRÉSTIMOS ATRASADOS -->
+            <div class="col">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+
+                        <div class="fs-1">⚠️</div>
+
+                        <h6 class="text-muted">
+                            Empréstimos atrasados
+                        </h6>
+
                         <h2
-                            class="fw-bold"
-                            id="totalDevolvidos"
+                            class="fw-bold text-danger"
+                            id="totalAtrasados"
                         >
                             0
                         </h2>
 
                     </div>
-
                 </div>
-
             </div>
 
         </div>
 
-
         <!-- CARDS DE ACESSO -->
-        <div class="row g-4">
-
+        <div class="row g-4 mb-4">
 
             <!-- LIVROS -->
-            <div class="col-md-4">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            📚
-                        </div>
+                        <div class="fs-1">📚</div>
 
                         <h5 class="card-title mt-2">
                             Livros
@@ -202,22 +170,15 @@
                         </button>
 
                     </div>
-
                 </div>
-
             </div>
 
-
             <!-- ALUNOS -->
-            <div class="col-md-4">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            👥
-                        </div>
+                        <div class="fs-1">👥</div>
 
                         <h5 class="card-title mt-2">
                             Alunos
@@ -235,22 +196,15 @@
                         </button>
 
                     </div>
-
                 </div>
-
             </div>
 
-
             <!-- EMPRÉSTIMOS -->
-            <div class="col-md-4">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            🔄
-                        </div>
+                        <div class="fs-1">🔄</div>
 
                         <h5 class="card-title mt-2">
                             Empréstimos
@@ -268,22 +222,15 @@
                         </button>
 
                     </div>
-
                 </div>
-
             </div>
 
-
             <!-- DEVOLUÇÕES -->
-            <div class="col-md-4">
-
-                <div class="card shadow-sm border-0">
-
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
 
-                        <div class="fs-1">
-                            📋
-                        </div>
+                        <div class="fs-1">📋</div>
 
                         <h5 class="card-title mt-2">
                             Devoluções
@@ -293,105 +240,130 @@
                             Consulte as devoluções realizadas.
                         </p>
 
-                     <button
-    class="btn btn-primary"
-    onclick="window.location.href='devolucoes.html'"
->
-    Acessar
-</button>
+                        <button
+                            class="btn btn-primary"
+                            onclick="window.location.href='devolucoes.html'"
+                        >
+                            Acessar
+                        </button>
 
                     </div>
-
                 </div>
-
             </div>
 
         </div>
 
     </div>
 
-
     <!-- JAVASCRIPT -->
     <script>
 
-        // CARREGAR DADOS
+        async function carregarDashboard() {
 
-        const livros =
-            JSON.parse(
-                localStorage.getItem("livros")
-            ) || [];
+            try {
 
+                const [resLivros, resAlunos, resEmprestimos] =
+                    await Promise.all([
+                        fetch("/api/livros"),
+                        fetch("/api/alunos"),
+                        fetch("/api/emprestimos")
+                    ]);
 
-        const alunos =
-            JSON.parse(
-                localStorage.getItem("alunos")
-            ) || [];
+                if (
+                    !resLivros.ok ||
+                    !resAlunos.ok ||
+                    !resEmprestimos.ok
+                ) {
+                    throw new Error(
+                        "Erro ao consultar os dados do sistema."
+                    );
+                }
 
+                const livros = await resLivros.json();
+                const alunos = await resAlunos.json();
+                const emprestimos = await resEmprestimos.json();
 
-        const emprestimos =
-            JSON.parse(
-                localStorage.getItem("emprestimos")
-            ) || [];
-
-
-        // TOTAL DE LIVROS
-
-        document.getElementById(
-            "totalLivros"
-        ).innerText = livros.length;
-
-
-        // TOTAL DE ALUNOS
-
-        document.getElementById(
-            "totalAlunos"
-        ).innerText = alunos.length;
-
-
-        // EMPRÉSTIMOS ATIVOS
-
-        const ativos =
-            emprestimos.filter(function(emprestimo) {
-
-                return (
-                    emprestimo.status ===
-                    "Emprestado"
+                // Total de exemplares cadastrados
+                const totalLivros = livros.reduce(
+                    (total, livro) =>
+                        total + Number(livro.quantidade || 0),
+                    0
                 );
 
-            }).length;
+                // Total de alunos
+                const totalAlunos = alunos.length;
 
-
-        document.getElementById(
-            "totalAtivos"
-        ).innerText = ativos;
-
-
-        // DEVOLUÇÕES
-
-        const devolvidos =
-            emprestimos.filter(function(emprestimo) {
-
-                return (
-                    emprestimo.status ===
-                    "Devolvido"
+                // Empréstimos ativos
+                const ativos = emprestimos.filter(
+                    e => e.status === "Emprestado"
                 );
 
-            }).length;
+                // Total de devoluções
+                const devolvidos = emprestimos.filter(
+                    e => e.status === "Devolvido"
+                );
 
+                // Data atual no horário local
+                const hoje = obterDataLocal();
 
-        document.getElementById(
-            "totalDevolvidos"
-        ).innerText = devolvidos;
+                // Empréstimos atrasados
+                const atrasados = ativos.filter(
+                    e => e.data_devolucao_prevista < hoje
+                );
 
+                // Atualizar indicadores
+                document.getElementById("totalLivros").textContent =
+                    totalLivros;
 
-        // SAIR
+                document.getElementById("totalAlunos").textContent =
+                    totalAlunos;
 
-        function sair() {
+                document.getElementById("totalAtivos").textContent =
+                    ativos.length;
 
-            window.location.href =
-                "index.html";
+                document.getElementById("totalDevolvidos").textContent =
+                    devolvidos.length;
+
+                document.getElementById("totalAtrasados").textContent =
+                    atrasados.length;
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                alert(
+                    "Não foi possível carregar os indicadores do Dashboard."
+                );
+
+            }
 
         }
+
+        // Retorna a data atual no formato YYYY-MM-DD
+        function obterDataLocal() {
+
+            const hoje = new Date();
+
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+            const dia = String(hoje.getDate()).padStart(2, "0");
+
+            return `${ano}-${mes}-${dia}`;
+
+        }
+
+        // Sair do sistema
+        function sair() {
+
+            window.location.href = "/";
+
+        }
+
+        // Carregar indicadores ao abrir a página
+        document.addEventListener(
+            "DOMContentLoaded",
+            carregarDashboard
+        );
 
     </script>
 

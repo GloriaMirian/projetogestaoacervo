@@ -377,574 +377,290 @@
 
     <script>
 
-        // CARREGAR DADOS
+        
+let alunos = [];
+let livros = [];
+let emprestimos = [];
 
-        let livros =
-            JSON.parse(localStorage.getItem("livros")) || [];
+async function carregarDados() {
+    try {
+        const [resAlunos, resLivros, resEmprestimos] = await Promise.all([
+            fetch("/api/alunos"),
+            fetch("/api/livros"),
+            fetch("/api/emprestimos")
+        ]);
 
-        let alunos =
-            JSON.parse(localStorage.getItem("alunos")) || [];
-
-        let emprestimos =
-            JSON.parse(localStorage.getItem("emprestimos")) || [];
-
-
-        const modal =
-            new bootstrap.Modal(
-                document.getElementById("modalEmprestimo")
-            );
-
-
-        // ABRIR CADASTRO
-
-        function abrirCadastro() {
-
-            carregarAlunos();
-
-            carregarLivros();
-
-            document.getElementById("aluno").value = "";
-
-            document.getElementById("livro").value = "";
-
-            definirDatas();
-
-            modal.show();
-
+        if (!resAlunos.ok || !resLivros.ok || !resEmprestimos.ok) {
+            throw new Error("Não foi possível carregar os dados.");
         }
 
-
-        // CARREGAR ALUNOS
-
-        function carregarAlunos() {
-
-            const select =
-                document.getElementById("aluno");
-
-            select.innerHTML = `
-                <option value="">
-                    Selecione o aluno
-                </option>
-            `;
-
-
-            alunos.forEach(function(aluno, indice) {
-
-                select.innerHTML += `
-
-                    <option value="${indice}">
-                        ${aluno.nome} - ${aluno.matricula}
-                    </option>
-
-                `;
-
-            });
-
-        }
-
-
-        // CARREGAR LIVROS
-
-        function carregarLivros() {
-
-            const select =
-                document.getElementById("livro");
-
-            select.innerHTML = `
-                <option value="">
-                    Selecione o livro
-                </option>
-            `;
-
-
-            livros.forEach(function(livro, indice) {
-
-                const quantidade =
-                    Number(livro.quantidade);
-
-
-                if (quantidade > 0) {
-
-                    select.innerHTML += `
-
-                        <option value="${indice}">
-                            ${livro.titulo} - ${livro.autor}
-                            (${quantidade} disponível)
-                        </option>
-
-                    `;
-
-                }
-
-            });
-
-        }
-
-
-        // DEFINIR DATAS
-
-        function definirDatas() {
-
-            const hoje =
-                new Date();
-
-
-            const dataHoje =
-                hoje.toISOString().split("T")[0];
-
-
-            document.getElementById("dataEmprestimo").value =
-                dataHoje;
-
-
-            const devolucao =
-                new Date(hoje);
-
-
-            devolucao.setDate(
-                devolucao.getDate() + 7
-            );
-
-
-            const dataDevolucao =
-                devolucao.toISOString().split("T")[0];
-
-
-            document.getElementById("dataDevolucao").value =
-                dataDevolucao;
-
-        }
-
-
-        // SALVAR EMPRÉSTIMO
-
-        function salvarEmprestimo() {
-
-            const alunoIndex =
-                document.getElementById("aluno").value;
-
-            const livroIndex =
-                document.getElementById("livro").value;
-
-            const dataEmprestimo =
-                document.getElementById("dataEmprestimo").value;
-
-            const dataDevolucao =
-                document.getElementById("dataDevolucao").value;
-
-
-            if (
-                alunoIndex === "" ||
-                livroIndex === "" ||
-                !dataEmprestimo ||
-                !dataDevolucao
-            ) {
-
-                alert(
-                    "Preencha todos os campos."
-                );
-
-                return;
-
-            }
-
-
-            if (dataDevolucao < dataEmprestimo) {
-
-                alert(
-                    "A data de devolução não pode ser anterior à data do empréstimo."
-                );
-
-                return;
-
-            }
-
-
-            const livro =
-                livros[livroIndex];
-
-
-            if (Number(livro.quantidade) <= 0) {
-
-                alert(
-                    "Este livro não está disponível."
-                );
-
-                return;
-
-            }
-
-
-            const aluno =
-                alunos[alunoIndex];
-
-
-            const emprestimo = {
-
-                aluno: aluno.nome,
-
-                matricula: aluno.matricula,
-
-                livro: livro.titulo,
-
-                autor: livro.autor,
-
-                dataEmprestimo: dataEmprestimo,
-
-                dataDevolucao: dataDevolucao,
-
-                status: "Emprestado"
-
-            };
-
-
-            emprestimos.push(emprestimo);
-
-
-            // DIMINUI A QUANTIDADE DO LIVRO
-
-            livro.quantidade =
-                Number(livro.quantidade) - 1;
-
-
-            // SALVAR LIVROS
-
-            localStorage.setItem(
-                "livros",
-                JSON.stringify(livros)
-            );
-
-
-            // SALVAR EMPRÉSTIMOS
-
-            localStorage.setItem(
-                "emprestimos",
-                JSON.stringify(emprestimos)
-            );
-
-
-            modal.hide();
-
-
-            listarEmprestimos();
-
-        }
-
-
-        // LISTAR EMPRÉSTIMOS
-
-        function listarEmprestimos() {
-
-            const tabela =
-                document.getElementById("listaEmprestimos");
-
-            const semEmprestimos =
-                document.getElementById("semEmprestimos");
-
-            const pesquisa =
-                document
-                    .getElementById("pesquisa")
-                    .value
-                    .toLowerCase();
-
-
-            tabela.innerHTML = "";
-
-
-            const filtrados =
-                emprestimos.filter(function(emprestimo) {
-
-                    return (
-
-                        emprestimo.aluno
-                            .toLowerCase()
-                            .includes(pesquisa)
-
-                        ||
-
-                        emprestimo.livro
-                            .toLowerCase()
-                            .includes(pesquisa)
-
-                    );
-
-                });
-
-
-            if (filtrados.length === 0) {
-
-                semEmprestimos.style.display =
-                    "block";
-
-            } else {
-
-                semEmprestimos.style.display =
-                    "none";
-
-            }
-
-
-            filtrados.forEach(function(
-                emprestimo
-            ) {
-
-                const indice =
-                    emprestimos.indexOf(
-                        emprestimo
-                    );
-
-
-                let statusHtml;
-
-
-                if (
-                    emprestimo.status ===
-                    "Devolvido"
-                ) {
-
-                    statusHtml = `
-                        <span class="badge bg-success">
-                            Devolvido
-                        </span>
-                    `;
-
-                } else {
-
-                    statusHtml = `
-                        <span class="badge bg-warning text-dark">
-                            Emprestado
-                        </span>
-                    `;
-
-                }
-
-
-                let botao = "";
-
-
-                if (
-                    emprestimo.status ===
-                    "Emprestado"
-                ) {
-
-                    botao = `
-
-                        <button
-                            class="btn btn-sm btn-success"
-                            onclick="registrarDevolucao(${indice})"
-                        >
-                            Devolver
-                        </button>
-
-                    `;
-
-                }
-
-
-                tabela.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${emprestimo.aluno}
-                        </td>
-
-                        <td>
-                            ${emprestimo.livro}
-                        </td>
-
-                        <td>
-                            ${formatarData(
-                                emprestimo.dataEmprestimo
-                            )}
-                        </td>
-
-                        <td>
-                            ${formatarData(
-                                emprestimo.dataDevolucao
-                            )}
-                        </td>
-
-                        <td>
-                            ${statusHtml}
-                        </td>
-
-                        <td>
-                            ${botao}
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
-
-            atualizarResumo();
-
-        }
-
-
-        // DEVOLUÇÃO
-
-        function registrarDevolucao(indice) {
-
-            const confirmar =
-                confirm(
-                    "Confirmar devolução deste livro?"
-                );
-
-
-            if (!confirmar) {
-
-                return;
-
-            }
-
-
-            const emprestimo =
-                emprestimos[indice];
-
-
-            // PROCURAR O LIVRO
-
-            const livro =
-                livros.find(function(livro) {
-
-                    return (
-                        livro.titulo ===
-                        emprestimo.livro
-                    );
-
-                });
-
-
-            if (livro) {
-
-                livro.quantidade =
-                    Number(livro.quantidade) + 1;
-
-            }
-
-
-            emprestimo.status =
-                "Devolvido";
-
-
-            localStorage.setItem(
-                "livros",
-                JSON.stringify(livros)
-            );
-
-
-            localStorage.setItem(
-                "emprestimos",
-                JSON.stringify(emprestimos)
-            );
-
-
-            listarEmprestimos();
-
-        }
-
-
-        // RESUMO
-
-        function atualizarResumo() {
-
-            const ativos =
-                emprestimos.filter(function(
-                    emprestimo
-                ) {
-
-                    return (
-                        emprestimo.status ===
-                        "Emprestado"
-                    );
-
-                }).length;
-
-
-            const devolvidos =
-                emprestimos.filter(function(
-                    emprestimo
-                ) {
-
-                    return (
-                        emprestimo.status ===
-                        "Devolvido"
-                    );
-
-                }).length;
-
-
-            document.getElementById(
-                "totalAtivos"
-            ).innerText = ativos;
-
-
-            document.getElementById(
-                "totalDevolvidos"
-            ).innerText = devolvidos;
-
-
-            document.getElementById(
-                "totalEmprestimos"
-            ).innerText =
-                emprestimos.length;
-
-        }
-
-
-        // FORMATAR DATA
-
-        function formatarData(data) {
-
-            if (!data) {
-
-                return "-";
-
-            }
-
-
-            const partes =
-                data.split("-");
-
-
-            return (
-                partes[2] +
-                "/" +
-                partes[1] +
-                "/" +
-                partes[0]
-            );
-
-        }
-
-
-        // VOLTAR
-
-        function voltar() {
-
-            window.location.href =
-                "dashboard.html";
-
-        }
-
-
-        // SAIR
-
-        function sair() {
-
-            window.location.href =
-                "index.html";
-
-        }
-
-
-        // CARREGAR
+        alunos = await resAlunos.json();
+        livros = await resLivros.json();
+        emprestimos = await resEmprestimos.json();
 
         listarEmprestimos();
+    } catch (erro) {
+        console.error(erro);
+        alert("Erro ao carregar os empréstimos. Verifique o servidor.");
+    }
+}
+
+async function abrirCadastro() {
+    await carregarDados();
+
+    const selectAluno = document.getElementById("aluno");
+    const selectLivro = document.getElementById("livro");
+
+    selectAluno.innerHTML = '<option value="">Selecione um aluno</option>';
+    selectLivro.innerHTML = '<option value="">Selecione um livro</option>';
+
+    alunos.forEach(aluno => {
+        selectAluno.innerHTML += `
+            <option value="${aluno.id}">
+                ${escaparHTML(aluno.nome)} - ${escaparHTML(aluno.matricula)}
+            </option>
+        `;
+    });
+
+    livros.forEach(livro => {
+        const emprestados = emprestimos.filter(
+            e => e.livro_id === livro.id && e.status === "Emprestado"
+        ).length;
+
+        const disponiveis = livro.quantidade - emprestados;
+
+        if (disponiveis > 0) {
+            selectLivro.innerHTML += `
+                <option value="${livro.id}">
+                    ${escaparHTML(livro.titulo)} (${disponiveis} disponíveis)
+                </option>
+            `;
+        }
+    });
+
+    definirDatas();
+
+    const modal = new bootstrap.Modal(
+        document.getElementById("modalEmprestimo")
+    );
+
+    modal.show();
+}
+
+function definirDatas() {
+    const hoje = new Date();
+    const devolucao = new Date();
+
+    devolucao.setDate(hoje.getDate() + 7);
+
+    document.getElementById("dataEmprestimo").value =
+        hoje.toISOString().split("T")[0];
+
+    document.getElementById("dataDevolucao").value =
+        devolucao.toISOString().split("T")[0];
+}
+
+async function salvarEmprestimo() {
+    const alunoId = document.getElementById("aluno").value;
+    const livroId = document.getElementById("livro").value;
+    const dataEmprestimo = document.getElementById("dataEmprestimo").value;
+    const dataDevolucao = document.getElementById("dataDevolucao").value;
+
+    if (!alunoId || !livroId || !dataEmprestimo || !dataDevolucao) {
+        alert("Preencha todos os campos.");
+        return;
+    }
+
+    if (dataDevolucao < dataEmprestimo) {
+        alert("A data de devolução não pode ser anterior ao empréstimo.");
+        return;
+    }
+
+    try {
+        const resposta = await fetch("/api/emprestimos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                aluno_id: Number(alunoId),
+                livro_id: Number(livroId),
+                data_emprestimo: dataEmprestimo,
+                data_devolucao_prevista: dataDevolucao
+            })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+            throw new Error(resultado.erro || "Erro ao cadastrar empréstimo.");
+        }
+
+        alert("Empréstimo cadastrado com sucesso!");
+
+        const modalElemento = document.getElementById("modalEmprestimo");
+        bootstrap.Modal.getInstance(modalElemento)?.hide();
+
+        await carregarDados();
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
+async function listarEmprestimos() {
+    try {
+        const resposta = await fetch("/api/emprestimos");
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao consultar empréstimos.");
+        }
+
+        emprestimos = await resposta.json();
+
+        const pesquisa = document.getElementById("pesquisa")
+            .value.toLowerCase();
+
+        const lista = document.getElementById("listaEmprestimos");
+        const semEmprestimos = document.getElementById("semEmprestimos");
+
+        const filtrados = emprestimos.filter(e =>
+            e.aluno.toLowerCase().includes(pesquisa) ||
+            e.livro.toLowerCase().includes(pesquisa)
+        );
+
+        lista.innerHTML = "";
+
+        filtrados.forEach(e => {
+            const linha = document.createElement("tr");
+
+            linha.innerHTML = `
+                <td>${escaparHTML(e.aluno)}</td>
+                <td>${escaparHTML(e.livro)}</td>
+                <td>${formatarData(e.data_emprestimo)}</td>
+                <td>${formatarData(e.data_devolucao_prevista)}</td>
+                <td>
+                    <span class="badge ${
+    e.status === "Devolvido"
+        ? "bg-success"
+        : estaAtrasado(e.data_devolucao_prevista, e.status)
+            ? "bg-danger"
+            : "bg-warning text-dark"
+}">
+    ${
+        e.status === "Devolvido"
+            ? "Devolvido"
+            : estaAtrasado(e.data_devolucao_prevista, e.status)
+                ? "Atrasado"
+                : "Emprestado"
+    }
+</span>
+                </td>
+                <td>
+                    ${
+                        e.status === "Emprestado"
+                            ? `<button class="btn btn-sm btn-success"
+                                onclick="registrarDevolucao(${e.id})">
+                                Devolver
+                               </button>`
+                            : '<span class="text-muted">Finalizado</span>'
+                    }
+                </td>
+            `;
+
+            lista.appendChild(linha);
+        });
+
+        semEmprestimos.style.display =
+            filtrados.length === 0 ? "block" : "none";
+
+        atualizarResumo();
+
+    } catch (erro) {
+        console.error(erro);
+        alert("Não foi possível listar os empréstimos.");
+    }
+}
+
+async function registrarDevolucao(id) {
+    if (!confirm("Deseja registrar a devolução deste livro?")) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch(
+            `/api/emprestimos/${id}/devolucao`,
+            { method: "PUT" }
+        );
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+            throw new Error(resultado.erro || "Erro ao registrar devolução.");
+        }
+
+        alert("Devolução registrada com sucesso!");
+
+        await carregarDados();
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
+function atualizarResumo() {
+    const ativos = emprestimos.filter(
+        e => e.status === "Emprestado"
+    ).length;
+
+    const devolvidos = emprestimos.filter(
+        e => e.status === "Devolvido"
+    ).length;
+
+    document.getElementById("totalAtivos").textContent = ativos;
+    document.getElementById("totalDevolvidos").textContent = devolvidos;
+    document.getElementById("totalEmprestimos").textContent =
+        emprestimos.length;
+}
+
+function formatarData(data) {
+    if (!data) return "-";
+
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
+}
+function estaAtrasado(dataDevolucao, status) {
+    if (status !== "Emprestado") {
+        return false;
+    }
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const dataPrevista = new Date(`${dataDevolucao}T00:00:00`);
+
+    return dataPrevista < hoje;
+}
+function escaparHTML(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[caractere]);
+}
+function voltar() {
+    window.location.href = "/dashboard.html";
+}
+
+function sair() {
+    window.location.href = "/";
+}
+
+// Inicialização da página
+document.addEventListener("DOMContentLoaded", carregarDados);
+
 
     </script>
 

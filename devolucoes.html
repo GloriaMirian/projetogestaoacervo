@@ -247,272 +247,133 @@
 
     <script>
 
-        // CARREGAR EMPRÉSTIMOS
+       
+let emprestimos = [];
 
-        let emprestimos =
-            JSON.parse(
-                localStorage.getItem("emprestimos")
-            ) || [];
+async function carregarDevolucoes() {
+    try {
+        const resposta = await fetch("/api/emprestimos");
 
-
-        // LISTAR DEVOLUÇÕES
-
-        function listarDevolucoes() {
-
-            const tabela =
-                document.getElementById(
-                    "listaDevolucoes"
-                );
-
-
-            const mensagem =
-                document.getElementById(
-                    "semDevolucoes"
-                );
-
-
-            const pesquisa =
-                document
-                    .getElementById("pesquisa")
-                    .value
-                    .toLowerCase();
-
-
-            tabela.innerHTML = "";
-
-
-            // SOMENTE DEVOLVIDOS
-
-            const devolucoes =
-                emprestimos.filter(function(
-                    emprestimo
-                ) {
-
-                    return (
-                        emprestimo.status ===
-                        "Devolvido"
-                    );
-
-                });
-
-
-            // PESQUISA
-
-            const filtradas =
-                devolucoes.filter(function(
-                    devolucao
-                ) {
-
-                    return (
-
-                        devolucao.aluno
-                            .toLowerCase()
-                            .includes(pesquisa)
-
-                        ||
-
-                        devolucao.livro
-                            .toLowerCase()
-                            .includes(pesquisa)
-
-                        ||
-
-                        devolucao.matricula
-                            .toLowerCase()
-                            .includes(pesquisa)
-
-                    );
-
-                });
-
-
-            // NENHUMA DEVOLUÇÃO
-
-            if (filtradas.length === 0) {
-
-                mensagem.style.display =
-                    "block";
-
-            } else {
-
-                mensagem.style.display =
-                    "none";
-
-            }
-
-
-            // MONTAR TABELA
-
-            filtradas.forEach(function(
-                devolucao
-            ) {
-
-                tabela.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${devolucao.aluno}
-                        </td>
-
-                        <td>
-                            ${devolucao.matricula}
-                        </td>
-
-                        <td>
-                            ${devolucao.livro}
-                        </td>
-
-                        <td>
-                            ${formatarData(
-                                devolucao.dataEmprestimo
-                            )}
-                        </td>
-
-                        <td>
-                            ${formatarData(
-                                devolucao.dataDevolucao
-                            )}
-                        </td>
-
-                        <td>
-                            ${formatarData(
-                                devolucao.dataDevolucao
-                            )}
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-success">
-                                Devolvido
-                            </span>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
-
-            atualizarIndicadores(devolucoes);
-
+        if (!resposta.ok) {
+            throw new Error("Erro ao consultar devoluções.");
         }
 
-
-        // ATUALIZAR INDICADORES
-
-        function atualizarIndicadores(
-            devolucoes
-        ) {
-
-            // TOTAL
-
-            document.getElementById(
-                "totalDevolucoes"
-            ).innerText =
-                devolucoes.length;
-
-
-            // DATA DE HOJE
-
-            const hoje =
-                new Date()
-                    .toISOString()
-                    .split("T")[0];
-
-
-            const hojeTotal =
-                devolucoes.filter(function(
-                    devolucao
-                ) {
-
-                    /*
-                     * Atualmente o sistema registra
-                     * a devolução usando a data prevista.
-                     */
-
-                    return (
-                        devolucao.dataDevolucao ===
-                        hoje
-                    );
-
-                }).length;
-
-
-            document.getElementById(
-                "devolucoesHoje"
-            ).innerText =
-                hojeTotal;
-
-
-            // LIVROS DEVOLVIDOS
-
-            document.getElementById(
-                "livrosDevolvidos"
-            ).innerText =
-                devolucoes.length;
-
-        }
-
-
-        // FORMATAR DATA
-
-        function formatarData(data) {
-
-            if (!data) {
-
-                return "-";
-
-            }
-
-
-            const partes =
-                data.split("-");
-
-
-            if (partes.length !== 3) {
-
-                return data;
-
-            }
-
-
-            return (
-                partes[2] +
-                "/" +
-                partes[1] +
-                "/" +
-                partes[0]
-            );
-
-        }
-
-
-        // VOLTAR
-
-        function voltar() {
-
-            window.location.href =
-                "dashboard.html";
-
-        }
-
-
-        // SAIR
-
-        function sair() {
-
-            window.location.href =
-                "index.html";
-
-        }
-
-
-        // CARREGAR
+        emprestimos = await resposta.json();
 
         listarDevolucoes();
+
+    } catch (erro) {
+        console.error(erro);
+        alert("Não foi possível carregar o histórico de devoluções.");
+    }
+}
+
+function listarDevolucoes() {
+    const tabela = document.getElementById("listaDevolucoes");
+    const mensagem = document.getElementById("semDevolucoes");
+
+    const pesquisa = document
+        .getElementById("pesquisa")
+        .value.toLowerCase();
+
+    tabela.innerHTML = "";
+
+    // Somente empréstimos devolvidos
+    const devolucoes = emprestimos.filter(
+        emprestimo => emprestimo.status === "Devolvido"
+    );
+
+    // Pesquisa por aluno, livro ou matrícula
+    const filtradas = devolucoes.filter(devolucao =>
+        (devolucao.aluno || "").toLowerCase().includes(pesquisa) ||
+        (devolucao.livro || "").toLowerCase().includes(pesquisa) ||
+        (devolucao.matricula || "").toLowerCase().includes(pesquisa)
+    );
+
+    mensagem.style.display =
+        filtradas.length === 0 ? "block" : "none";
+
+    filtradas.forEach(devolucao => {
+        const linha = document.createElement("tr");
+
+        linha.innerHTML = `
+            <td>${escaparHTML(devolucao.aluno)}</td>
+            <td>${escaparHTML(devolucao.matricula)}</td>
+            <td>${escaparHTML(devolucao.livro)}</td>
+            <td>${formatarData(devolucao.data_emprestimo)}</td>
+            <td>${formatarData(devolucao.data_devolucao_prevista)}</td>
+            <td>${formatarData(devolucao.data_devolucao_real)}</td>
+            <td>
+                <span class="badge bg-success">Devolvido</span>
+            </td>
+        `;
+
+        tabela.appendChild(linha);
+    });
+
+    atualizarIndicadores(devolucoes);
+}
+
+function atualizarIndicadores(devolucoes) {
+    // Total de devoluções
+    document.getElementById("totalDevolucoes").textContent =
+        devolucoes.length;
+
+    // Data atual no horário local
+    const hoje = obterDataLocal();
+
+    // Devoluções realizadas hoje
+    const hojeTotal = devolucoes.filter(devolucao =>
+        devolucao.data_devolucao_real === hoje
+    ).length;
+
+    document.getElementById("devolucoesHoje").textContent =
+        hojeTotal;
+
+    // Total de livros devolvidos
+    document.getElementById("livrosDevolvidos").textContent =
+        devolucoes.length;
+}
+
+function obterDataLocal() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+}
+
+function formatarData(data) {
+    if (!data) return "-";
+
+    const partes = data.split("-");
+
+    if (partes.length !== 3) return data;
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function escaparHTML(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[caractere]);
+}
+
+function voltar() {
+    window.location.href = "/dashboard.html";
+}
+
+function sair() {
+    window.location.href = "/";
+}
+
+document.addEventListener("DOMContentLoaded", carregarDevolucoes);
+
 
     </script>
 
